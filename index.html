@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Modern Minimal Tic-Tac-Toe</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- Main Game Layout Container -->
+  <div class="game-wrapper" id="gameWrapper">
+    <h1 class="game-title">Tic-Tac-Toe</h1>
+    
+    <!-- Dynamic Turn/Status Display -->
+    <div class="status-text" id="statusText">Player <span class="player-x-highlight">X</span>'s Turn</div>
+
+    <!-- 3x3 Game Board Grid -->
+    <div class="game-board" id="gameBoard">
+      <button class="board-cell" data-cell-index="0"></button>
+      <button class="board-cell" data-cell-index="1"></button>
+      <button class="board-cell" data-cell-index="2"></button>
+      <button class="board-cell" data-cell-index="3"></button>
+      <button class="board-cell" data-cell-index="4"></button>
+      <button class="board-cell" data-cell-index="5"></button>
+      <button class="board-cell" data-cell-index="6"></button>
+      <button class="board-cell" data-cell-index="7"></button>
+      <button class="board-cell" data-cell-index="8"></button>
+    </div>
+
+    <!-- Main Control Action Button -->
+    <button class="button-secondary" id="requestRestartButton">Restart Game</button>
+  </div>
+
+  <!-- End Game Notification Modal -->
+  <div class="modal-overlay" id="gameOverOverlay">
+    <div class="modal-box">
+      <h2 class="modal-title" id="gameOverMessage">Player X Wins!</h2>
+      <button class="button-primary" id="playAgainButton">Play Again</button>
+    </div>
+  </div>
+
+  <!-- Mid-Game Confirmation Prompt Modal -->
+  <div class="modal-overlay" id="confirmRestartOverlay">
+    <div class="modal-box">
+      <h2 class="modal-title">Restart Match?</h2>
+      <p class="modal-subtitle">Are both players sure you want to reset the current game?</p>
+      <div class="modal-buttons-layout">
+        <button class="button-secondary" id="cancelRestartButton">Cancel</button>
+        <button class="button-primary button-danger" id="confirmRestartButton">Yes, Restart</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

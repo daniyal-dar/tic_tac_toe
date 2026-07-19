@@ -1,0 +1,277 @@
+/* --- Global Reset & Base Box Settings --- */
+* {
+  box-sizing: border-box;
+  margin: 0;             
+  padding: 0;            
+}
+
+/* --- Clear Modern Dark Theme Variables --- */
+:root {
+  --main-background-color: #121214;
+  --game-card-bg-color: rgba(28, 28, 36, 0.75);
+  --game-card-border-color: rgba(255, 255, 255, 0.08);
+  --text-color-primary: #f8fafc;
+  --text-color-secondary: #94a3b8;
+  
+  --brand-accent-color: #6366f1; 
+  --brand-accent-hover: #4f46e5;
+  --danger-action-color: #ef4444; 
+  --danger-action-hover: #dc2626;
+  
+  --cell-bg-color: rgba(255, 255, 255, 0.03);
+  --cell-hover-color: rgba(255, 255, 255, 0.07);
+  --player-x-theme-color: #38bdf8; 
+  --player-o-theme-color: #fb7185; 
+  
+  --global-font-stack: -apple-system, BlinkMacSystemFont, "Plus Jakarta Sans", "Segoe UI", Roboto, sans-serif;
+}
+
+/* Targets the main body container of the whole web page */
+body {
+  height: 100vh;                     
+  display: flex;                     
+  justify-content: center;           
+  align-items: center;               
+  background-color: var(--main-background-color); 
+  font-family: var(--global-font-stack);
+  color: var(--text-color-primary);
+  overflow: hidden;                  
+}
+
+/* Targets the main layout container wrapper holding the game elements */
+.game-wrapper {
+  display: flex;                     
+  flex-direction: column;            
+  align-items: center;               
+  background: var(--game-card-bg-color);
+  border: 1px solid var(--game-card-border-color);
+  padding: 40px 48px;                
+  border-radius: 24px;
+  box-shadow: 0px 20px 50px rgba(0, 0, 0, 0.5);
+  text-align: center;
+  transition: filter 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+}
+
+/* Targets the game layout container ONLY when a popup modal is open on screen */
+.game-wrapper.blurred-background-active {
+  filter: blur(10px) brightness(0.7); 
+  pointer-events: none;               
+}
+
+/* Targets the h1 heading for the game title */
+.game-title {
+  margin: 0px 0px 4px 0px;
+  font-size: 36px;                   
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+/* Targets the wrapper element displaying whose turn it is */
+.status-text {
+  margin-bottom: 28px;               
+  font-size: 18px;                   
+  font-weight: 500;
+  color: var(--text-color-secondary);
+}
+
+/* Targets the specific colored text highlight when it is Player X's turn */
+.player-x-highlight { 
+  color: var(--player-x-theme-color); 
+  font-weight: 700; 
+}
+
+/* Targets the specific colored text highlight when it is Player O's turn */
+.player-o-highlight { 
+  color: var(--player-o-theme-color); 
+  font-weight: 700; 
+}
+
+/* Targets the 3x3 grid system container */
+.game-board {
+  display: grid;                     
+  grid-template-columns: repeat(3, 100px); /* Creates 3 vertical columns, each 100px wide */
+  grid-template-rows: repeat(3, 100px);    /* Creates 3 horizontal rows, each 100px tall */
+  gap: 14px;                         
+  margin-bottom: 28px;               
+}
+
+/* Targets all 9 interactive grid cell boxes on the board */
+.board-cell {
+  background-color: var(--cell-bg-color);
+  border: 1px solid var(--game-card-border-color);
+  border-radius: 16px;
+  font-size: 44px;                   
+  font-weight: 800;
+  color: inherit;
+  cursor: pointer;                   
+  display: flex;                     
+  justify-content: center;
+  align-items: center;
+  outline: none;                     
+  /* Handles smooth animation changes when hovering or clicking cells */
+  transition: background-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+/* 
+  EXPLANATION FOR: .board-cell:hover:not(.x):not(.o)
+  This applies styles ONLY when a mouse hovers over a cell (:hover)
+  AND that cell does NOT have the class "x" (:not(.x))
+  AND that cell does NOT have the class "o" (:not(.o)).
+  Meaning: It only animates EMPTY cells that haven't been clicked yet!
+*/
+.board-cell:hover:not(.x):not(.o) {
+  background-color: var(--cell-hover-color);
+  border-color: rgba(255, 255, 255, 0.18);
+  transform: translateY(-2px);       /* Subtle lift-up movement effect on hover */
+  box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* 
+  EXPLANATION FOR: .board-cell:active:not(.x):not(.o)
+  Applies styles ONLY when the user is actively holding down the mouse click (:active)
+  on an EMPTY cell that does not contain "x" or "o".
+*/
+.board-cell:active:not(.x):not(.o) {
+  transform: translateY(0px) scale(0.95); /* Shrinks slightly to mimic a real physical button click */
+}
+
+/* Targets cells that have been claimed by player X */
+.board-cell.x {
+  color: var(--player-x-theme-color);
+  cursor: not-allowed;               /* Changes cursor to a block/prohibited sign */
+  text-shadow: 0px 0px 16px rgba(56, 189, 248, 0.3); /* Soft glowing effect behind X */
+}
+
+/* Targets cells that have been claimed by player O */
+.board-cell.o {
+  color: var(--player-o-theme-color);
+  cursor: not-allowed;               /* Changes cursor to a block/prohibited sign */
+  text-shadow: 0px 0px 16px rgba(251, 113, 133, 0.3); /* Soft glowing effect behind O */
+}
+
+/* Targets cells with class 'x' OR cells with class 'o' to trigger entry animations */
+.board-cell.x, .board-cell.o {
+  animation: cellPopInAnimation 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+/* Keyframe animation instructions to scale up characters when placed */
+@keyframes cellPopInAnimation {
+  0% { transform: scale(0.4); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* Targets general grey secondary action buttons (like Restart/Cancel) */
+.button-secondary {
+  background-color: rgba(255, 255, 255, 0.05);
+  color: var(--text-color-primary);
+  border: 1px solid var(--game-card-border-color);
+  padding: 13px 29px;                
+  font-size: 15px;                   
+  font-weight: 600;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+/* Targets secondary button on mouse hover */
+.button-secondary:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  transform: translateY(-1px);
+}
+
+/* Targets primary vibrant action buttons (like Play Again/Yes) */
+.button-primary {
+  background-color: var(--brand-accent-color);
+  color: #ffffff;
+  border: none;
+  padding: 14px 32px;                
+  font-size: 16px;                   
+  font-weight: 600;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+/* Targets primary button on mouse hover */
+.button-primary:hover {
+  background-color: var(--brand-accent-hover);
+  transform: translateY(-2px);
+  box-shadow: 0px 8px 20px rgba(99, 102, 241, 0.4);
+}
+
+/* Targets primary button when it has the modifier class 'button-danger' (Reset confirmation) */
+.button-primary.button-danger {
+  background-color: var(--danger-action-color);
+}
+
+/* Targets danger button on mouse hover */
+.button-primary.button-danger:hover {
+  background-color: var(--danger-action-hover);
+  box-shadow: 0px 8px 20px rgba(239, 68, 68, 0.4);
+}
+
+/* Targets the fullscreen background layer for popup overlay modals */
+.modal-overlay {
+  position: fixed;                   
+  top: 0px;
+  left: 0px;
+  width: 100vw;                      /* Spans full width of the screen */
+  height: 100vh;                     /* Spans full height of the screen */
+  background-color: rgba(10, 10, 12, 0.65); /* Translucent dim layer overlay */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;                        /* Hidden by default (invisible) */
+  visibility: hidden;                /* Cannot be interacted with when inactive */
+  transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.3s ease;
+  z-index: 100;                      /* Forces popup layer to stay on top of background game container */
+}
+
+/* Targets the overlay layer when JavaScript gives it the active class '.visible' */
+.modal-overlay.visible {
+  opacity: 1;                        /* Becomes fully visible */
+  visibility: visible;               /* Turns on pointer interactions */
+}
+
+/* Targets the inner content box floating card inside the modal layer */
+.modal-box {
+  background: var(--game-card-bg-color);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--game-card-border-color);
+  padding: 40px 48px;                /* converted to pixels */
+  border-radius: 24px;
+  box-shadow: 0px 25px 50px rgba(0, 0, 0, 0.6);
+  text-align: center;
+  transform: scale(0.85) translateY(10px); /* Starts slightly smaller and dropped lower for pop animation */
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* 
+  EXPLANATION FOR: .modal-overlay.visible .modal-box
+  Targets the .modal-box card ONLY when its parent .modal-overlay has the .visible class active.
+*/
+.modal-overlay.visible .modal-box {
+  transform: scale(1) translateY(0px); /* Springs box up to full original size using transition curve */
+}
+
+/* Targets the header title within overlay cards */
+.modal-title {
+  font-size: 32px;                   
+  margin: 0px 0px 8px 0px;
+  font-weight: 700;
+}
+
+/* Targets supporting subtext under modal titles */
+.modal-subtitle {
+  color: var(--text-color-secondary);
+  font-size: 15px;                   
+  margin: 0px 0px 28px 0px;
+}
+
+/* Targets horizontal container formatting button placements side-by-side */
+.modal-buttons-layout {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
